@@ -62,6 +62,7 @@ type Bar struct {
 	// timeElased is the time elapsed for the progress
 	timeElapsed time.Duration
 	current     int
+	other       int
 
 	mtx *sync.RWMutex
 
@@ -88,7 +89,7 @@ func NewBar(total int) *Bar {
 }
 
 // Set the current count of the bar. It returns ErrMaxCurrentReached when trying n exceeds the total value. This is atomic operation and concurancy safe.
-func (b *Bar) Set(n int) error {
+func (b *Bar) Set(n int, other int) error {
 	b.mtx.Lock()
 	defer b.mtx.Unlock()
 
@@ -96,6 +97,7 @@ func (b *Bar) Set(n int) error {
 		return ErrMaxCurrentReached
 	}
 	b.current = n
+	b.other = other
 	return nil
 }
 
@@ -122,6 +124,12 @@ func (b *Bar) Current() int {
 	b.mtx.RLock()
 	defer b.mtx.RUnlock()
 	return b.current
+}
+
+func (b *Bar) Other() int {
+	b.mtx.RLock()
+	defer b.mtx.RUnlock()
+	return b.other
 }
 
 // AppendFunc runs the decorator function and renders the output on the right of the progress bar
