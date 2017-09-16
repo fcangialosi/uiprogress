@@ -177,14 +177,14 @@ func (b *Bar) PrependCompleted() *Bar {
 
 func (b *Bar) PrependSecRemaining() *Bar {
 	b.PrependFunc(func(b *Bar) string {
-		return fmt.Sprintf("%05ds", (b.Deadline.Sub(time.Now()) / time.Second))
+		return ((b.Deadline.Sub(time.Now()) / time.Second) * time.Second).String()
 	})
 	return b
 }
 
 func (b *Bar) AppendOtherBytes() *Bar {
 	b.AppendFunc(func(b *Bar) string {
-		return b.OtherBytesString()
+		return b.OtherBytesString() + "     "
 	})
 	return b
 }
