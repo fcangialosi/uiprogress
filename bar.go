@@ -182,6 +182,13 @@ func (b *Bar) PrependSecRemaining() *Bar {
 	return b
 }
 
+func (b *Bar) PrependString(s string) *Bar {
+	b.PrependFunc(func(b *Bar) string {
+		return s
+	})
+	return b
+}
+
 func (b *Bar) AppendOtherBytes() *Bar {
 	b.AppendFunc(func(b *Bar) string {
 		return b.OtherBytesString() + "     "
