@@ -10,16 +10,16 @@ import (
 )
 
 func TestBarPrepend(t *testing.T) {
-	b := NewBar(100)
+	b := NewBar(time.Time{}, 100)
 	b.PrependCompleted()
-	b.Set(50)
+	b.Set(50, 0)
 	if !strings.Contains(b.String(), "50") {
 		t.Fatal("want", "50%", "in", b.String())
 	}
 }
 
 func TestBarIncr(t *testing.T) {
-	b := NewBar(10000)
+	b := NewBar(time.Time{}, 10000)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	var wg sync.WaitGroup
 	for i := 0; i < 10000; i++ {

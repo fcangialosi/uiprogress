@@ -16,7 +16,7 @@ func TestStoppingPrintout(t *testing.T) {
 	var buffer = &bytes.Buffer{}
 	progress.SetOut(buffer)
 
-	bar := progress.AddBar(100)
+	bar := progress.AddBar(time.Time{}, 100)
 	progress.Start()
 
 	var wg sync.WaitGroup
@@ -25,7 +25,7 @@ func TestStoppingPrintout(t *testing.T) {
 
 	go func() {
 		for i := 0; i <= 80; i = i + 10 {
-			bar.Set(i)
+			bar.Set(i, 0)
 			time.Sleep(time.Millisecond * 5)
 		}
 

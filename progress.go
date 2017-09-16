@@ -58,7 +58,7 @@ func New() *Progress {
 
 // AddBar creates a new progress bar and adds it to the default progress container
 func AddBar(total int) *Bar {
-	return defaultProgress.AddBar(total)
+	return defaultProgress.AddBar(time.Time{}, total)
 }
 
 // Start starts the rendering the progress of progress bars using the DefaultProgress. It listens for updates using `bar.Set(n)` and new bars when added using `AddBar`
@@ -91,11 +91,11 @@ func (p *Progress) SetRefreshInterval(interval time.Duration) {
 }
 
 // AddBar creates a new progress bar and adds to the container
-func (p *Progress) AddBar(total int) *Bar {
+func (p *Progress) AddBar(deadline time.Time, total int) *Bar {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
-	bar := NewBar(total)
+	bar := NewBar(deadline, total)
 	bar.Width = p.Width
 	p.Bars = append(p.Bars, bar)
 	return bar

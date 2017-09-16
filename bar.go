@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/gosuri/uiprogress/util/strutil"
 )
 
@@ -55,6 +56,7 @@ type Bar struct {
 
 	// TimeStated is time progress began
 	TimeStarted time.Time
+	Deadline    time.Time
 
 	// Width is the width of the progress bar
 	Width int
@@ -74,7 +76,7 @@ type Bar struct {
 type DecoratorFunc func(b *Bar) string
 
 // NewBar returns a new progress bar
-func NewBar(total int) *Bar {
+func NewBar(deadline time.Time, total int) *Bar {
 	return &Bar{
 		Total:    total,
 		Width:    Width,
@@ -83,6 +85,7 @@ func NewBar(total int) *Bar {
 		Head:     Head,
 		Fill:     Fill,
 		Empty:    Empty,
+		Deadline: deadline,
 
 		mtx: &sync.RWMutex{},
 	}
@@ -172,6 +175,20 @@ func (b *Bar) PrependCompleted() *Bar {
 	return b
 }
 
+func (b *Bar) PrependSecRemaining() *Bar {
+	b.PrependFunc(func(b *Bar) string {
+		return fmt.Sprintf("%05ds", (b.Deadline.Sub(time.Now()) / time.Second))
+	})
+	return b
+}
+
+func (b *Bar) AppendOtherBytes() *Bar {
+	b.AppendFunc(func(b *Bar) string {
+		return b.OtherBytesString()
+	})
+	return b
+}
+
 // PrependElapsed prepends the time elapsed to the begining of the bar
 func (b *Bar) PrependElapsed() *Bar {
 	b.PrependFunc(func(b *Bar) string {
@@ -230,6 +247,10 @@ func (b *Bar) CompletedPercent() float64 {
 // CompletedPercentString returns the formatted string representation of the completed percent
 func (b *Bar) CompletedPercentString() string {
 	return fmt.Sprintf("%3.f%%", b.CompletedPercent())
+}
+
+func (b *Bar) OtherBytesString() string {
+	return humanize.Bytes(uint64(b.Other()))
 }
 
 // TimeElapsed returns the time elapsed
