@@ -176,8 +176,14 @@ func (b *Bar) PrependCompleted() *Bar {
 }
 
 func (b *Bar) PrependSecRemaining() *Bar {
+	var remaining time.Duration
 	b.PrependFunc(func(b *Bar) string {
-		return ((b.Deadline.Sub(time.Now()) / time.Second) * time.Second).String()
+		remaining = (b.Deadline.Sub(time.Now()) / time.Second) * time.Second
+		if remaining > 0 {
+			return remaining.String()
+		} else {
+			return "\u2714 "
+		}
 	})
 	return b
 }
