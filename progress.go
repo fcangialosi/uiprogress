@@ -113,6 +113,9 @@ func (p *Progress) Listen() {
 		case <-time.After(interval):
 			p.print()
 		case <-p.tdone:
+			for _, bar := range p.Bars {
+				bar.Complete = true
+			}
 			p.print()
 			close(p.tdone)
 			return

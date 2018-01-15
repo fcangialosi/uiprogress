@@ -61,6 +61,9 @@ type Bar struct {
 	// Width is the width of the progress bar
 	Width int
 
+	// Whether or not the task is complete
+	Complete bool
+
 	// timeElased is the time elapsed for the progress
 	timeElapsed time.Duration
 	current     int
@@ -86,6 +89,7 @@ func NewBar(deadline time.Time, total int) *Bar {
 		Fill:     Fill,
 		Empty:    Empty,
 		Deadline: deadline,
+		Complete: false,
 
 		mtx: &sync.RWMutex{},
 	}
@@ -179,7 +183,7 @@ func (b *Bar) PrependSecRemaining() *Bar {
 	var remaining time.Duration
 	b.PrependFunc(func(b *Bar) string {
 		remaining = (b.Deadline.Sub(time.Now()) / time.Second) * time.Second
-		if remaining > 0 {
+		if !b.Complete {
 			return remaining.String()
 		} else {
 			return "\u2714 "
